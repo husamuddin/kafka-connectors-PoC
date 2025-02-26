@@ -12,7 +12,7 @@ def docdb_seed(count, *args):
 
 run = {
     "mongodb": mongodb_seed,
-    "docdb": mongodb_seed
+    "docdb": docdb_seed
 }
 
 def main():
