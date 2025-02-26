@@ -133,6 +133,7 @@ services:
       - ./lib/mongo/init.js:/docker-entrypoint-initdb.d/init-replica.js:ro
 
   seed:
+    container_name: seed
     build:
       context: ./lib/py-seed
     command: sleep infinity
@@ -145,6 +146,7 @@ services:
 
   kcat:
     image: confluentinc/cp-kafkacat
+    container_name: kcat
     command:
       - sh
       - -c
