@@ -8,6 +8,10 @@ tasks:
     cmds:
       - docker compose exec seed python -m seed.main -t mongodb -c 400
 
+  docdb:seed:
+    cmds:
+      - docker compose exec seed python -m seed.main -t docdb -c 400
+
   kafka:mongo_1:source:
     cmds:
       - |
@@ -42,7 +46,7 @@ tasks:
             "connection.uri": "${DOCDB_CONNECTION_STRING}",
             "database": "demo",
             "collection": "users",
-            "copy.existing": "true"
+            "copy.existing": "true",
             "topic.prefix": "docdb"
           }
         }
@@ -67,6 +71,25 @@ tasks:
         }
         EOF
 
+  kafka:docdb:sink-mongo-1:
+    cmds:
+      - |
+        cat <<EOF | curl -X POST -H "Content-Type: application/json" \
+            --data @- \
+            http://localhost:8083/connectors
+        {
+          "name": "docdb_sink_mongo_1_connector",
+          "config": {
+            "name": "docdb_sink_mongo_1_connector",
+            "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
+            "topics": "docdb.demo.users",
+            "connection.uri": "${DOCDB_CONNECTION_STRING}",
+            "database": "demo",
+            "collection": "imported_users"
+          }
+        }
+        EOF
+
   kafka:mongo-2:sink-docdb:
     cmds:
       - |
@@ -79,7 +102,7 @@ tasks:
             "name": "mongo_2_sink_docdb_connector",
             "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
             "topics": "docdb.demo.users",
-            "connection.uri": "${DOCDB_CONNECTION_STRING}",
+            "connection.uri": "mongodb://mongo_2:27017/",
             "database": "demo",
             "collection": "docdb_imported_users"
           }
