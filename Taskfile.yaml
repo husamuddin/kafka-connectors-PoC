@@ -1,0 +1,93 @@
+version: '3'
+
+dotenv:
+  - .env
+
+tasks:
+  mongo_1:seed:
+    cmds:
+      - docker compose exec seed python -m seed.main -t mongodb -c 400
+
+  kafka:mongo_1:source:
+    cmds:
+      - |
+        cat <<EOF | curl -X POST -H "Content-Type: application/json" \
+            --data @- \
+            http://localhost:8083/connectors
+        {
+          "name": "mongo_1_source_connector",
+          "config": {
+            "name": "mongo_1_source_connector",
+            "connector.class": "com.mongodb.kafka.connect.MongoSourceConnector",
+            "connection.uri": "mongodb://mongo_1:27017",
+            "database": "demo",
+            "collection": "users",
+            "copy.existing": "true",
+            "topic.prefix": "mongo_1"
+          }
+        }
+        EOF
+
+  kafka:docdb:source:
+    cmds:
+      - |
+        cat <<EOF | curl -X POST -H "Content-Type: application/json" \
+            --data @- \
+            http://localhost:8083/connectors
+        {
+          "name": "docdb_source_connector",
+          "config": {
+            "name": "docdb_source_connector",
+            "connector.class": "com.mongodb.kafka.connect.MongoSourceConnector",
+            "connection.uri": "${DOCDB_CONNECTION_STRING}",
+            "database": "demo",
+            "collection": "users",
+            "copy.existing": "true"
+            "topic.prefix": "docdb"
+          }
+        }
+        EOF
+
+  kafka:mongo-2:sink-mongo:
+    cmds:
+      - |
+        cat <<EOF | curl -X POST -H "Content-Type: application/json" \
+            --data @- \
+            http://localhost:8083/connectors
+        {
+          "name": "mongo_2_sink_mongo_1_connector",
+          "config": {
+            "name": "mongo_2_sink_mongo_1_connector",
+            "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
+            "topics": "mongo_1.demo.users",
+            "connection.uri": "mongodb://mongo_2:27017/",
+            "database": "demo",
+            "collection": "mongo_1_imported_users"
+          }
+        }
+        EOF
+
+  kafka:mongo-2:sink-docdb:
+    cmds:
+      - |
+        cat <<EOF | curl -X POST -H "Content-Type: application/json" \
+            --data @- \
+            http://localhost:8083/connectors
+        {
+          "name": "mongo_2_sink_docdb_connector",
+          "config": {
+            "name": "mongo_2_sink_docdb_connector",
+            "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
+            "topics": "docdb.demo.users",
+            "connection.uri": "${DOCDB_CONNECTION_STRING}",
+            "database": "demo",
+            "collection": "docdb_imported_users"
+          }
+        }
+        EOF
+
+  docdb:connect:
+    cmds:
+      - |
+        docker run --rm -it -v ./global-bundle.pem:/tmp/config/global-bundle.pem:ro alpine/mongosh \
+          mongosh ${DOCDB_HOST}:27018 --tls --tlsCAFile /tmp/config/global-bundle.pem --retryWrites=false --username vandelay --password ${DOCDB_PASSWORD}

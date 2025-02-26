@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "seed"
+version = "0.1.0"
+description = ""
+authors = ["Husamuddin Hamad <husamuddin.hamad@hudl.com>"]
+readme = "README.md"
+packages = [{include = "seed", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pymongo = "^4.11.1"
+faker = "^36.1.0"
+motor = "^3.7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+mongodb = "seed.main:mongodb_seed"
+docdb = "seed.main:docdb_seed"
+start = "seed.main:main"
