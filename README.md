@@ -98,8 +98,7 @@ task kafka:docdb:source    # Create DocumentDB source connector
 
 # Sink Connectors
 task kafka:mongo-2:sink-mongo   # MongoDB->MongoDB replication
-task kafka:docdb:sink-mongo-1   # DocDB->MongoDB pipeline
-task kafka:mongo-2:sink-docdb   # MongoDB->DocDB replication
+task kafka:mongo-2:sink-docdb   # DocDB->MongoDB replication
 ```
 
 ### Database Access
