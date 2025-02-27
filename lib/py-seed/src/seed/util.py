@@ -5,7 +5,7 @@ import functools
 import os
 
 async def insert_user(collection, fake, index):
-    """Async function to insert a single person document into MongoDB"""
+    """Async function to insert a single user document into MongoDB"""
     name = fake.name()
     await collection.insert_one({"name": name})
     print(f"- created name: {name}")
