@@ -6,11 +6,11 @@ dotenv:
 tasks:
   mongo_1:seed:
     cmds:
-      - docker compose exec seed python -m seed.main -t mongodb -c 400
+      - docker compose exec seed python -m seed.main -t mongodb -c {{.CLI_ARGS | default 400}}
 
   docdb:seed:
     cmds:
-      - docker compose exec seed python -m seed.main -t docdb -c 400
+      - docker compose exec seed python -m seed.main -t docdb -c {{.CLI_ARGS | default 400}}
 
   kafka:mongo_1:source:
     cmds:
