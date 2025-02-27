@@ -117,6 +117,17 @@ MongoDB (mongo_1) |	27017 |	Primary MongoDB instance
 MongoDB (mongo_2) |	- |	Secondary MongoDB for replication
 KSQLDB Server |	8088 |	Stream processing engine
 
+### 📦 Services Versions
+| Service	| Version	|
+| --- | --- |
+Kafka Broker | 7.8.0 |
+Schema Registry |	7.8.0 |
+Kafka Connect | 7.9.0 |
+Control Center | 7.8.0 |
+MongoDB (mongo_1) |	7.0 |
+MongoDB (mongo_2) |	7.0 |
+KSQLDB Server |	7.8.0 |
+
 ### 🔍 Testing the Pipeline
 
 #### 1. Verify Connectors
