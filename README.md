@@ -185,5 +185,29 @@ mongodb://<user>:<password>@<endpoint>:27017/?tls=true&replicaSet=rs0
 docker exec -it kcat kafkacat -b broker:9092 -L
 ```
 
+## FAQ
+- ### How many databases and collections can Kafka handle?
+For mongodb kafka connector, there's no explicit limit on the number of databases or collections it can handle. the practical limitations depend more on:
+- infrastructure resources (cpu, memory, network bandwidth)
+- kafka cluster configuration (partitions, brokers, topic settings)
+- mongodb deployment architecture
 
+**key considerations**:
+- each collection typically maps to a kafka topic
+- resource usage scales with the number of connector tasks running
+- proper sizing of kafka partitions is critical for performance
+- connection pooling settings should be optimized for the scale
+
+- ### Can Kafka MongoDB Connector work with sharded databases as sources?
+Yes! The connector fully supports reading from sharded MongoDB, it captures changes (via Change Streams) across all shards in the cluster
+
+**key considerations**:
+Change Streams support: The Kafka MongoDB connector relies heavily on MongoDB's Change Streams feature, which was introduced in MongoDB 3.6 (for replica sets) and fully supported for sharded clusters in MongoDB 4.0+.
+
+
+- ### With DMS/CDC, we need to create indexes first before transferring any data. Can Kafka connector handle this?
+No, Kafka Connector can't automatically create indexes on the target MongoDB collections. We'll need to manually set up any necessary indexes before starting data transfer, similar to the process with DMS/CDC.
+
+- ### We know that DMS has little impact on the source database (and that’s something we need to not affect production applications). Do we know Kafka impact in the source in terms of resources usage?
+The connector utilizes MongoDB's change streams to monitor real-time data changes, which is efficient but also introduce some overhead, high data volumes and numerous monitoring collections can increase CPU and memory usage. The Connector configuration need to be tuned for that, like the connector batch.size and poll.await.time to balance throughput and resource consumption.
 
