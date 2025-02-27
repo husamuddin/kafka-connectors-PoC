@@ -117,7 +117,7 @@ services:
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
 
   mongo_1:
-    image: mongo:latest
+    image: mongo:7
     container_name: mongo_1
     command: mongod --replSet rs0 --bind_ip_all
     ports:
@@ -126,7 +126,7 @@ services:
       - ./lib/mongo/init.js:/docker-entrypoint-initdb.d/init-replica.js:ro
 
   mongo_2:
-    image: mongo:latest
+    image: mongo:7
     container_name: mongo_2
     command: mongod --replSet rs0 --bind_ip_all
     volumes:
