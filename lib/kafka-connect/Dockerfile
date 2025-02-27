@@ -1,4 +1,4 @@
-  FROM confluentinc/cp-kafka-connect-base:latest
+  FROM confluentinc/cp-kafka-connect-base:7.9.0
   USER root
 
   # Create directory and copy the correct AWS RDS CA bundle
