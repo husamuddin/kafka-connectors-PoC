@@ -3,13 +3,13 @@ group "default" {
 }
 
 target "kafka-connect" {
-  context = "./lib/kafka-connect"
+  context = "../lib/kafka-connect"
   dockerfile = "./Dockerfile"
   tag = "ca-kafka-poc/kafka-connect:latest"
 }
 
 target "seed" {
-  context = "./lib/py-seed"
+  context = "../lib/py-seed"
   dockerfile = "./Dockerfile"
   tag = "ca-kafka-poc/py-seed:latest"
 }

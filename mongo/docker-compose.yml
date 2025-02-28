@@ -1,0 +1,39 @@
+include:
+  - ./kafka-include.yaml
+---
+services:
+  mongo_1:
+    image: mongo:7
+    container_name: mongo_1
+    command: mongod --replSet rs0 --bind_ip_all
+    ports:
+      - 27017:27017
+    volumes:
+      - ./lib/mongo/init.js:/docker-entrypoint-initdb.d/init-replica.js:ro
+
+  mongo_2:
+    image: mongo:7
+    container_name: mongo_2
+    command: mongod --replSet rs0 --bind_ip_all
+    volumes:
+      - ./lib/mongo/init.js:/docker-entrypoint-initdb.d/init-replica.js:ro
+
+  seed:
+    container_name: seed
+    build:
+      context: ../lib/py-seed
+    command: sleep infinity
+    env_file: .env
+    environment:
+      MONGODB_CONNECTION_STRING: mongodb://mongo_1:27017/?directConnection=true
+    volumes:
+      # - ./lib/py-seed:/app:ro
+      - ./global-bundle.pem:/app/global-bundle.pem:ro
+
+  kcat:
+    image: confluentinc/cp-kafkacat
+    container_name: kcat
+    command:
+      - sh
+      - -c
+      - while true; do sleep 3600; done
