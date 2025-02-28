@@ -18,5 +18,6 @@
   ENV JAVA_OPTS="-Djavax.net.ssl.trustStore=/etc/pki/java/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
 
   USER appuser
-  RUN confluent-hub install --no-prompt mongodb/kafka-connect-mongodb:1.9.1
 
+  RUN confluent-hub install --no-prompt mongodb/kafka-connect-mongodb:1.9.1
+  RUN confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:latest
