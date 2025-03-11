@@ -55,7 +55,7 @@ cd kafka-streaming-pocs
 ### 2. Choose a PoC:
 - For Elasticsearch to OpenSearch: Navigate to [elasticsearch/](elasticsearch/) and follow its README.
 - For MongoDB/DocumentDB: Navigate to [mongo/](mongo/) and follow its README.
-- 
+
 ### 3. Run the PoC:
 Each subdirectory provides specific task commands to start services, seed data, and manage the pipeline.
 
