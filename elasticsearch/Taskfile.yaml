@@ -3,4 +3,54 @@ version: '3'
 dotenv:
   - .env
 
-tasks: {}
+tasks:
+  up:
+    cmds:
+      - task: docker:create-network
+      - docker compose up -d
+      - task: kafka:create-topic
+  down:
+    cmds:
+      - docker compose down --remove-orphans
+      - task: docker:elasticsearch-down
+      - task: docker:kafka-down
+      - task: docker:delete-network
+
+  docker:create-network:
+    cmds:
+      - docker network inspect elasticsearch-poc > /dev/null 2>&1 || docker network create elasticsearch-poc 
+
+  docker:delete-network:
+    cmds:
+      - docker network inspect elasticsearch-poc > /dev/null 2>&1 || docker network remove elasticsearch-poc 
+
+  kafka:create-topic:
+    cmds:
+      - |
+        docker compose exec -t broker \
+          kafka-topics --create \
+            --topic liquorsales \
+            --bootstrap-server broker:9092 \
+            --partitions 1 \
+            --replication-factor 1 \
+            --if-not-exists
+
+  docker:elasticsearch:
+    dir: ./logstash-elasticsearch
+    cmds:
+      - docker compose up -d --build
+
+  docker:kafka:
+    dir: ./logstash-kafka
+    cmds:
+      - docker compose up -d --build
+
+  docker:elasticsearch-down:
+    dir: ./logstash-elasticsearch
+    cmds:
+      - docker compose down --remove-orphans
+
+  docker:kafka-down:
+    dir: ./logstash-kafka
+    cmds:
+      - docker compose down --remove-orphans

@@ -1,0 +1,15 @@
+services:
+  logstash:
+    image: logstash:8.11.1
+    container_name: logstash-elasticsearch
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash-csv-to-elastic-search.conf
+      - ./data.sample.csv/:/data/data.csv
+    environment:
+      - LS_JAVA_OPTS=-Xmx8g -Xms4g
+    networks:
+      - elasticsearch-poc
+
+networks:
+  elasticsearch-poc:
+    external: true

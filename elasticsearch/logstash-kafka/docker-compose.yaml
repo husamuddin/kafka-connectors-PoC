@@ -1,0 +1,32 @@
+services:
+  logstash:
+    image: logstash:8.11.1
+    container_name: logstash-kafka
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    environment:
+      - LS_JAVA_OPTS=-Xmx8g -Xms4g
+    networks:
+      - elasticsearch-poc
+
+  debugging:
+    build:
+      dockerfile_inline: |
+        FROM alpine:latest 
+        RUN apk update &&\
+          apk add \
+            bind-tools \
+            net-tools
+
+    container_name: debugging
+    command:
+      - ash
+      - -c 
+      - >
+        while true; do sleep 3600; done
+    networks:
+      - elasticsearch-poc
+
+networks:
+  elasticsearch-poc:
+    external: true
