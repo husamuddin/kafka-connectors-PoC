@@ -9,24 +9,6 @@ services:
     networks:
       - elasticsearch-poc
 
-  debugging:
-    build:
-      dockerfile_inline: |
-        FROM alpine:latest 
-        RUN apk update &&\
-          apk add \
-            bind-tools \
-            net-tools
-
-    container_name: debugging
-    command:
-      - ash
-      - -c 
-      - >
-        while true; do sleep 3600; done
-    networks:
-      - elasticsearch-poc
-
 networks:
   elasticsearch-poc:
     external: true

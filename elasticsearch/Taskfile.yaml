@@ -35,12 +35,12 @@ tasks:
             --replication-factor 1 \
             --if-not-exists
 
-  docker:elasticsearch:
+  logstash:elasticsearch:
     dir: ./logstash-elasticsearch
     cmds:
       - docker compose up -d --build
 
-  docker:kafka:
+  logstash:kafka:
     dir: ./logstash-kafka
     cmds:
       - docker compose up -d --build
@@ -54,3 +54,34 @@ tasks:
     dir: ./logstash-kafka
     cmds:
       - docker compose down --remove-orphans
+
+  kafka:connector:
+    cmds:
+      - curl -X DELETE http://localhost:8083/connectors/opensearch-sink-connector
+      - sleep 3; echo "now recreating the connector"
+      - |
+        cat <<EOF | curl -X POST -H "Content-Type: application/json" \
+            --data @- \
+            http://localhost:8083/connectors
+        {
+          "name": "opensearch-sink-connector",
+          "config": {
+            "connector.class": "io.aiven.kafka.connect.opensearch.OpensearchSinkConnector",
+            "tasks.max": "1",
+            "topics": "liquorsales",
+            "connection.url": "http://opensearch:9200",
+            "type.name": "_doc",
+            "key.ignore": "true",
+            "schema.ignore": "true",
+            "behavior.on.malformed.documents": "warn",
+            "errors.tolerance": "all",
+            "errors.log.enable": "true",
+            "errors.log.include.messages": "true",
+            "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+            "key.converter.schemas.enable": "false",
+            "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+            "value.converter.schemas.enable": "false"
+          }
+        }
+        EOF
+

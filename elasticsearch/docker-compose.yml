@@ -1,42 +1,23 @@
 include:
+  - ./elasticsearch-include.yaml
+  - ./opensearch-include.yaml
   - ./kafka-include.yaml
----
-services:
-  elasticsearch:
-    image: elasticsearch:8.11.1
-    container_name: elasticsearch
-    restart: always
-    environment:
-      - node.name=elasticsearch
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - cluster.name=es-docker-cluster
-      - bootstrap.memory_lock=true
-      - ES_JAVA_OPTS=-Xms4g -Xmx4g
-    ports:
-      - 9200:9200
-      - 9300:9300
-    mem_limit: 8g
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9200"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - elasticsearch-poc
-  kibana:
-    image: kibana:8.11.1
-    container_name: kibana
-    ports:
-      - 5601:5601
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    networks:
-      - elasticsearch-poc
 
-networks:
-  elasticsearch-poc:
-    external: true
+services:
+  debugging:
+    build:
+      dockerfile_inline: |
+        FROM alpine:latest
+        RUN apk update &&\
+          apk add \
+            bind-tools \
+            net-tools
+
+    container_name: debugging
+    command:
+      - ash
+      - -c
+      - >
+        while true; do sleep 3600; done
+    networks:
+      - elasticsearch-poc
