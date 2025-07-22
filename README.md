@@ -48,7 +48,7 @@ This repository contains Proofs of Concept (PoCs) demonstrating Kafka-based data
 ## Getting Started
 ### 1. Clone the Repository:
 ```bash
-git clone git@github.com:hudl/cloud-alchemists-kafka-poc.git
+git clone git@github.com:husamuddin/kafka-connectors-PoC
 cd kafka-streaming-pocs
 ```
 
